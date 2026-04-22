@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 01:36:25 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/04/23 02:15:42 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/04/23 02:16:50 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int	prepare_philos(int philo_num, pthread_t *philos)
 	i = 0;
 	while (i < philo_num)
 	{
-		if (pthread_create(&philos[i], NULL, test, NULL) == 0)
+		if (pthread_create(&philos[i], NULL, test, NULL) != 0)
 		{
 			return (1);
 		}
