@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 01:36:25 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/04/23 02:21:35 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/04/23 02:23:12 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ int	main(int argc, char const *argv[])
 		return (free_all(info.philo_num, philos, forks));
 	prepare_forks(info.philo_num, forks);
 	prepare_philos(info.philo_num, philos);
-	printf("Hello World!");
+	printf("Hello World!\n");
 	free_all(info.philo_num, philos, forks);
 	return (0);
 }
