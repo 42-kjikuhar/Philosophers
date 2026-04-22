@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 01:36:25 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/04/23 02:51:27 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/04/23 02:52:50 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ t_philo_info	init_info(int argc, char const *argv[])
 
 int	validate_input(int argc, char const *argv[])
 {
+	(void)argv;
 	if (argc != 5 && argc != 6)
 	{
 		printf("Your input is wrong.\n");
