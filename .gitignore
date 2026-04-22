@@ -4,3 +4,4 @@
 obj/
 philosophers
 philo_bonus/philosophers_bonus
+*/*.out
