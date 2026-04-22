@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 01:36:25 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/04/23 02:23:12 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/04/23 02:28:39 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,20 @@ int	prepare_philos(int philo_num, pthread_t *philos)
 	return (0);
 }
 
+t_philo_info	init_info(int argc, char const *argv[])
+{
+	t_philo_info	info;
+
+	info.philo_num = atoi(argv[1]);
+	info.time_to_die_ms = atoi(argv[2]);
+	info.time_to_eat_ms = atoi(argv[3]);
+	info.time_to_sleep_ms = atoi(argv[4]);
+	if (argc == 6)
+		info.number_of_times_each_philosopher_must_eat = atoi(argv[5]);
+	return (info);
+
+}
+
 int	main(int argc, char const *argv[])
 {
 	t_philo_info	info;
@@ -85,12 +99,7 @@ int	main(int argc, char const *argv[])
 		printf("Your input is wrong.\n");
 		return (1);
 	}
-	info.philo_num = atoi(argv[1]);
-	info.time_to_die_ms = atoi(argv[2]);
-	info.time_to_eat_ms = atoi(argv[3]);
-	info.time_to_sleep_ms = atoi(argv[4]);
-	if (argc == 6)
-		info.number_of_times_each_philosopher_must_eat = atoi(argv[5]);
+	info = init_info(argc, argv);
 	philos = malloc(sizeof(pthread_t) * info.philo_num);
 	forks = malloc(sizeof(pthread_mutex_t) * info.philo_num);
 	if (!philos || !forks)
