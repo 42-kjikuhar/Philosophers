@@ -6,13 +6,13 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 01:36:25 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/04/22 22:17:12 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/04/23 02:07:29 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	free_all(philo_info_t *info, pthread_t *philos, pthread_mutex_t *forks)
+int	free_all(t_philo_info *info, pthread_t *philos, pthread_mutex_t *forks)
 {
 	int	i;
 
@@ -36,7 +36,7 @@ int	free_all(philo_info_t *info, pthread_t *philos, pthread_mutex_t *forks)
 	return (0);
 }
 
-int	prepare_forks(philo_info_t *info, pthread_mutex_t *forks)
+int	prepare_forks(t_philo_info *info, pthread_mutex_t *forks)
 {
 	int	i;
 
@@ -56,7 +56,7 @@ int	test(void *arg)
 {
 }
 
-int	prepare_philos(philo_info_t *info, pthread_t *philos)
+int	prepare_philos(t_philo_info *info, pthread_t *philos)
 {
 	int	i;
 
@@ -74,7 +74,7 @@ int	prepare_philos(philo_info_t *info, pthread_t *philos)
 
 int	main(int argc, char const *argv[])
 {
-	philo_info_t	*info;
+	t_philo_info	*info;
 	pthread_t		*philos;
 	pthread_mutex_t	*forks;
 
