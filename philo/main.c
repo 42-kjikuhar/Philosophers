@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 01:36:25 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/04/23 02:16:50 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/04/23 02:21:35 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,10 @@ int	prepare_forks(int philo_num, pthread_mutex_t *forks)
 	return (0);
 }
 
-int	test(void *arg)
+void	*test(void *arg)
 {
+	(void)arg;
+	return (NULL);
 }
 
 int	prepare_philos(int philo_num, pthread_t *philos)
