@@ -6,12 +6,12 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:39:50 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/04/22 22:10:37 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/04/23 02:03:46 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-# define PHOLO_H
+#ifndef PHILO_BONUS_H
+# define PHILO_BONUS_H
 
 # include <stdio.h>
 
