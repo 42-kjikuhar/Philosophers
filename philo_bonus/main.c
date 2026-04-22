@@ -3,18 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kei2003730 <kei2003730@student.42.fr>      +#+  +:+       +#+        */
+/*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/06 01:36:25 by kei2003730        #+#    #+#             */
-/*   Updated: 2025/07/11 11:42:39 by kei2003730       ###   ########.fr       */
+/*   Created: 2025/07/06 01:36:25 by kjikuhar          #+#    #+#             */
+/*   Updated: 2026/04/22 22:18:48 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int main(void)
+int	main(void)
 {
 	printf("Hello World!");
 	return (0);
 }
-

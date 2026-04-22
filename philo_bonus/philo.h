@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kei2003730 <kei2003730@student.42.fr>      +#+  +:+       +#+        */
+/*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/11 11:39:50 by kei2003730        #+#    #+#             */
-/*   Updated: 2025/07/11 11:46:50 by kei2003730       ###   ########.fr       */
+/*   Created: 2025/07/11 11:39:50 by kjikuhar          #+#    #+#             */
+/*   Updated: 2026/04/22 22:10:37 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHOLO_H
 
-#include <stdio.h>
+# include <stdio.h>
 
 #endif
