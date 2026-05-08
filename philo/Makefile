@@ -73,7 +73,7 @@ clean:
 	@echo "$(CYAN)Object files cleaned.$(RESET)"
 
 fclean: clean
-	@rm -f $(NAME)
+	@rm -f $(NAME) philosophers_asan philosophers_tsan
 	@echo "$(CYAN)$(NAME) removed.$(RESET)"
 
 re: fclean all
@@ -89,4 +89,12 @@ dev:
 	@$(MAKE) re CFLAGS="$(DEV_CFLAGS)"
 	@echo "$(MAGENTA)$(BOLD)[dev build] strict warnings + debug symbols$(RESET)"
 
-.PHONY: all clean fclean re leak dev
+# AddressSanitizer + UndefinedBehaviorSanitizer ビルド（philosophers_asan に出力）
+NAME_ASAN	:= philosophers_asan
+ASAN_CFLAGS	:= $(DEV_CFLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer
+
+asan:
+	@$(CC) $(ASAN_CFLAGS) $(SRCS) -o $(NAME_ASAN)
+	@echo "$(MAGENTA)$(BOLD)[asan build] ./$(NAME_ASAN) — AddressSanitizer + UBSan$(RESET)"
+
+.PHONY: all clean fclean re leak dev asan
