@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# コミットメッセージのルール:
+#   - 1 行のみ（本文・空行なし）
+#   - 許可された prefix で始まる
+#   - 日本語 OK
+# Merge / Revert の自動メッセージは検査をスキップする。
+
+set -eu
+
+MSG_FILE="$1"
+
+# コメント行（#）を除去し、末尾の空行をトリム
+content="$(grep -v '^#' "$MSG_FILE" | sed -e :a -e '/^$/{$d;N;ba' -e '}')"
+first_line="$(printf '%s\n' "$content" | sed -n '1p')"
+
+# 自動生成メッセージは例外として通す
+if [[ "$first_line" =~ ^Merge|^Revert ]]; then
+  exit 0
+fi
+
+# 複数行（本文付き）コミットを拒否
+non_empty="$(printf '%s\n' "$content" | grep -cE '.' || true)"
+if [[ "$non_empty" != "1" ]]; then
+  echo "✘ コミットメッセージは 1 行にしてください（本文・空行を含めない）。"
+  exit 1
+fi
+
+# prefix 必須
+if ! [[ "$first_line" =~ ^(add|delete|change|docs|chore|fix):[[:space:]].+ ]]; then
+  echo "✘ コミットメッセージは prefix を付けてください。"
+  echo "  許可: add: / delete: / change: / docs: / chore: / fix:"
+  echo "  例:   add: time_to_die の判定を追加"
+  echo "  入力: $first_line"
+  exit 1
+fi
+
+exit 0
