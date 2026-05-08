@@ -106,37 +106,44 @@ expect_no_adjacent_eat() {
 
 echo "=== philosophers behavior tests ==="
 
-# Case 1: must_eat 指定で全員食べ切ったら死なずに正常終了
-# odd/even 採用中、ttd=800 はフレーキーなので 1000 に緩めている。
-run_case "no death when must_eat satisfied (5 1000 200 200 5)" \
-  "5 1000 200 200 5" expect_no_death
+# subject 公式テストケース ----------------------------------------------------
 
-# Case 2: ttd < tte, 食事中に必ず死ぬ（5人版で確実）
-run_case "must die when ttd < tte (5 100 200 200)" \
-  "5 100 200 200" expect_died
+# S1: 1 800 200 200 → 哲学者は食べずに死ぬ。ttd=800 ms ぎりぎりで死亡（許容 +10ms）
+run_case "subject S1: 1 800 200 200 dies near ttd" "1 800 200 200" \
+  "awk '/ died$/ { if (\$1 >= 800 && \$1 <= 810) ok=1 } END { exit (ok ? 0 : 1) }'"
 
-# Case 3: 出力フォーマット <ms> <id> <state>
+# S2: 5 800 200 200 → 死亡なし（5 秒 wall timeout で打ち切り）
+run_case "subject S2: 5 800 200 200 no death" "5 800 200 200" expect_no_death
+
+# S3: 5 800 200 200 7 → 全員 7 回食べて正常終了、死亡なし
+run_case "subject S3: 5 800 200 200 7 must_eat satisfied" \
+  "5 800 200 200 7" expect_no_death
+
+# S4: 4 410 200 200 → 死亡なし（5 秒 wall timeout で打ち切り）
+run_case "subject S4: 4 410 200 200 no death" "4 410 200 200" expect_no_death
+
+# S5: 4 310 200 100 → 1 人は死ぬ
+run_case "subject S5: 4 310 200 100 at least one dies" \
+  "4 310 200 100" expect_died
+
+# S6: N=2 ぎりぎり cycle、死亡時刻精度（10ms 以内）
+# ttd=200, tte=100, tts=100. cycle=200ms。死ぬなら ttd 直後（<= 215ms）に出るはず。
+run_case "subject S6: 2 200 100 100 timing precision" "2 200 100 100" \
+  "awk '/ died$/ { if (\$1 <= 215) ok=1; else { print \"late:\", \$1 } } END { exit (ok || !died ? 0 : 1) } { died=1 }'"
+
+# 補助テスト ----------------------------------------------------------------
+
+# 出力フォーマット <ms> <id> <state>
 run_case "log format <ms> <id> <state> (5 800 200 200 3)" \
   "5 800 200 200 3" expect_log_format
 
-# Case 4: 隣接ペアが同時 eating していない
+# 隣接ペアが同時 eating していない
 run_case "no adjacent simultaneous eating (5 800 200 200 5)" \
   "5 800 200 200 5" "expect_no_adjacent_eat 5"
 
-# Case 5: 引数不正（必須4個不足）→ 非 0 exit & usage 出力
+# 引数不正（必須4個不足）→ 非 0 exit & usage 出力
 run_case "argc mismatch returns usage" \
   "3 100 100" "grep -q '^usage:'"
-
-# Case 6: must_eat 指定なし + 余裕パラメータ → 5 秒の wall timeout で打ち切られる
-# 出力に eating があり、died が無いこと
-run_case "no must_eat keeps eating without death (5 800 200 200)" \
-  "5 800 200 200" \
-  "grep -q 'is eating' && ! grep -q ' died$'"
-
-# Case 7: N=1 は fork が 1 本しかないので必ず死ぬ（ttd 経過で）
-run_case "N=1 must die (1 200 100 100)" \
-  "1 200 100 100" \
-  "grep -q ' died$' && ! grep -q ' is eating$'"
 
 echo
 echo "──────────────────────"
