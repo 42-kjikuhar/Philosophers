@@ -107,7 +107,7 @@ expect_no_adjacent_eat() {
 echo "=== philosophers behavior tests ==="
 
 # Case 1: must_eat 指定で全員食べ切ったら死なずに正常終了
-# min-first 採用中は P1 と P_N が fork 0 を奪い合うため ttd は 1000 に緩めている。
+# odd/even 採用中、ttd=800 はフレーキーなので 1000 に緩めている。
 run_case "no death when must_eat satisfied (5 1000 200 200 5)" \
   "5 1000 200 200 5" expect_no_death
 
