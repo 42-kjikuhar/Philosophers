@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:52:32 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 06:10:45 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 06:33:57 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void	*philo_routine(void *arg)
 		return (NULL);
 	}
 	if (p->id % 2 == 0)
-		usleep(p->sim->time_to_eat * 1000);
+		usleep(p->sim->time_to_eat * 500);
 	while (!is_finished(p->sim))
 	{
 		take_forks(p);
