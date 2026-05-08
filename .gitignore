@@ -1,7 +1,2 @@
-*.pdf
-*.md
-!memo.md
-obj/
-philosophers
-philo_bonus/philosophers_bonus
-*/*.out
+en.subject.pdf
+philo/obj/
