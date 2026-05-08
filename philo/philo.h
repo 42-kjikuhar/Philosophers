@@ -1,36 +1,69 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   serial_philo.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/11 11:39:50 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 03:46:45 by kjikuhar         ###   ########.fr       */
+/*   Created: 2026/05/09 04:03:30 by kjikuhar          #+#    #+#             */
+/*   Updated: 2026/05/09 04:15:07 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 
-# include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
+# include <sys/time.h>
 # include <unistd.h>
 
-typedef struct s_philo_info
+typedef enum e_state
 {
-	int	philo_num;
-	int	time_to_die_ms;
-	int	time_to_eat_ms;
-	int	time_to_sleep_ms;
-	int	number_of_times_each_philosopher_must_eat;
-}		t_philo_info;
+	THINKING,
+	HUNGRY,
+	EATING,
+	SLEEPING,
+	DEAD
+}			t_state;
 
-int		free_all(int philo_num, pthread_t *philos, pthread_mutex_t *forks);
-int		prepare_forks(int philo_num, pthread_mutex_t *forks);
-int		gather_philos(int philo_num, pthread_t *philos);
-void	*philo_routine(void *arg);
-int		ft_atoi(const char *s);
+typedef struct s_philo
+{
+	int		id;
+	int		left_fork;
+	int		right_fork;
+	t_state	state;
+	long	last_meal_time;
+	long	state_until;
+	int		meals_eaten;
+}			t_philo;
+
+typedef struct s_sim
+{
+	int		n;
+	long	time_to_die;
+	long	time_to_eat;
+	long	time_to_sleep;
+	long	simulation_time;
+	long	start_time;
+	int		*fork_used;
+	t_philo	*philos;
+	int		finished;
+}			t_sim;
+
+int			ft_atoi(const char *s);
+long		current_time_ms(void);
+void		print_log(t_sim *sim, int id, const char *msg, long now);
+
+int			can_take_forks(t_sim *sim, t_philo *p);
+void		take_forks(t_sim *sim, t_philo *p);
+void		put_forks(t_sim *sim, t_philo *p);
+
+void		update_philo(t_sim *sim, t_philo *p, long now);
+void		check_death(t_sim *sim, long now);
+
+int			init_sim(t_sim *sim, int argc, char **argv);
+void		free_sim(t_sim *sim);
+void		run_loop(t_sim *sim);
 
 #endif

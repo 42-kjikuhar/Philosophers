@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   forks.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,39 +12,20 @@
 
 #include "philo.h"
 
-int	ft_atoi(const char *s)
+int	can_take_forks(t_sim *sim, t_philo *p)
 {
-	long	n;
-	int		sign;
-
-	n = 0;
-	sign = 1;
-	while (*s == ' ' || (*s >= 9 && *s <= 13))
-		s++;
-	if (*s == '+' || *s == '-')
-	{
-		if (*s == '-')
-			sign = -1;
-		s++;
-	}
-	while (*s >= '0' && *s <= '9')
-	{
-		n = n * 10 + (*s - '0');
-		s++;
-	}
-	return ((int)(n * sign));
+	return (sim->fork_used[p->left_fork] == 0
+		&& sim->fork_used[p->right_fork] == 0);
 }
 
-long	current_time_ms(void)
+void	take_forks(t_sim *sim, t_philo *p)
 {
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return ((long)tv.tv_sec * 1000 + (long)tv.tv_usec / 1000);
+	sim->fork_used[p->left_fork] = 1;
+	sim->fork_used[p->right_fork] = 1;
 }
 
-void	print_log(t_sim *sim, int id, const char *msg, long now)
+void	put_forks(t_sim *sim, t_philo *p)
 {
-	(void)sim;
-	printf("%ld %d %s\n", now, id, msg);
+	sim->fork_used[p->left_fork] = 0;
+	sim->fork_used[p->right_fork] = 0;
 }
