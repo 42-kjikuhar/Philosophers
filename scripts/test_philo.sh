@@ -132,6 +132,11 @@ run_case "no must_eat keeps eating without death (5 800 200 200)" \
   "5 800 200 200" \
   "grep -q 'is eating' && ! grep -q ' died$'"
 
+# Case 7: N=1 は fork が 1 本しかないので必ず死ぬ（ttd 経過で）
+run_case "N=1 must die (1 200 100 100)" \
+  "1 200 100 100" \
+  "grep -q ' died$' && ! grep -q ' is eating$'"
+
 echo
 echo "──────────────────────"
 echo "  passed: $PASS"

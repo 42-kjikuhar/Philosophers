@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:03:30 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 04:15:07 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 04:42:32 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 int	can_take_forks(t_sim *sim, t_philo *p)
 {
+	if (p->left_fork == p->right_fork)
+		return (0);
 	return (sim->fork_used[p->left_fork] == 0
 		&& sim->fork_used[p->right_fork] == 0);
 }
