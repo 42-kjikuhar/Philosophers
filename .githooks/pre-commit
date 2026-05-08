@@ -79,4 +79,11 @@ if ! "$ROOT/scripts/check_forbidden.sh" philo; then
   exit 1
 fi
 
+# 5) philosophers シナリオテスト（4 秒程度）
+echo "→ philosophers シナリオテスト"
+if ! "$ROOT/scripts/test_philo.sh" >/dev/null; then
+  echo "✘ シナリオテスト失敗。詳細は 'bash scripts/test_philo.sh' で確認してください。"
+  exit 1
+fi
+
 echo "✔ pre-commit OK (${#FILES[@]} files)"
