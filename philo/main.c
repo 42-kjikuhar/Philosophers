@@ -6,73 +6,11 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 01:36:25 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/04/23 02:52:50 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 03:33:29 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int	free_all(int philo_num, pthread_t *philos, pthread_mutex_t *forks)
-{
-	int	i;
-
-	i = 0;
-	while (i < philo_num)
-	{
-		if (philos[i])
-		{
-			pthread_join(philos[i], NULL);
-		}
-		if (&forks[i])
-		{
-			pthread_mutex_destroy(&forks[i]);
-		}
-		i++;
-	}
-	if (philos)
-		free(philos);
-	if (forks)
-		free(forks);
-	return (0);
-}
-
-int	prepare_forks(int philo_num, pthread_mutex_t *forks)
-{
-	int	i;
-
-	i = 0;
-	while (i < philo_num)
-	{
-		if (pthread_mutex_init(&forks[i], NULL) != 0)
-		{
-			return (1);
-		}
-		i++;
-	}
-	return (0);
-}
-
-void	*philo_routine(void *arg)
-{
-	(void)arg;
-	return (NULL);
-}
-
-int	gather_philos(int philo_num, pthread_t *philos)
-{
-	int	i;
-
-	i = 0;
-	while (i < philo_num)
-	{
-		if (pthread_create(&philos[i], NULL, philo_routine, NULL) != 0)
-		{
-			return (1);
-		}
-		i++;
-	}
-	return (0);
-}
 
 t_philo_info	init_info(int argc, char const *argv[])
 {
