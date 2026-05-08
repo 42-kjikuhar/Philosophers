@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:52:32 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 06:05:18 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 06:10:45 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,14 @@ static void	do_eat(t_philo *p)
 
 static void	do_sleep_think(t_philo *p)
 {
+	long	slack;
+
 	log_event(p->sim, p->id, "is sleeping");
 	usleep(p->sim->time_to_sleep * 1000);
 	log_event(p->sim, p->id, "is thinking");
+	slack = p->sim->time_to_die - p->sim->time_to_eat - p->sim->time_to_sleep;
+	if (slack > 100)
+		usleep(slack * 500);
 }
 
 void	*philo_routine(void *arg)
