@@ -6,13 +6,13 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 01:36:25 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 03:46:45 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 03:55:03 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-t_philo_info	init_info(int argc, char const *argv[])
+static t_philo_info	init_info(int argc, char const *argv[])
 {
 	t_philo_info	info;
 
@@ -25,7 +25,7 @@ t_philo_info	init_info(int argc, char const *argv[])
 	return (info);
 }
 
-int	validate_input(int argc, char const *argv[])
+static int	validate_input(int argc, char const *argv[])
 {
 	(void)argv;
 	if (argc != 5 && argc != 6)
