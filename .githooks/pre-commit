@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# ステージされた C ソース（.c / .h）に c_formatter_42 を実行する。
+# 整形と同時に 42 ヘッダの `Updated:` 行が現在時刻に更新される。
+# その後、再ステージしてから norminette でチェックする。
+# 禁止関数の検査は `make forbidden` で別途行う（pre-commit を遅くしないため）。
+
+set -eu
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+# ステージされた .c / .h を収集（追加 / コピー / 変更のみ。削除は対象外）
+FILES=()
+while IFS= read -r f; do
+  [[ -n "$f" ]] && FILES+=("$f")
+done < <(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(c|h)$' || true)
+if [[ ${#FILES[@]} -eq 0 ]]; then
+  exit 0
+fi
+
+# ツール検出: PATH を優先し、なければユーザの venv をフォールバック
+find_tool() {
+  if command -v "$1" >/dev/null 2>&1; then
+    command -v "$1"
+  elif [[ -x "$HOME/.venv/bin/$1" ]]; then
+    echo "$HOME/.venv/bin/$1"
+  else
+    return 1
+  fi
+}
+
+FORMATTER="$(find_tool c_formatter_42 || true)"
+NORMINETTE="$(find_tool norminette || true)"
+
+if [[ -z "${FORMATTER:-}" ]]; then
+  echo "✘ c_formatter_42 が見つかりません (pip install c_formatter_42)"
+  exit 1
+fi
+if [[ -z "${NORMINETTE:-}" ]]; then
+  echo "✘ norminette が見つかりません (pip install norminette)"
+  exit 1
+fi
+
+# 1) 整形（c_formatter_42 は内容変更時のみ Updated 行を書き換えるため、確実性は次のステップで担保）
+echo "→ c_formatter_42: 整形"
+for f in "${FILES[@]}"; do
+  [[ -f "$f" ]] || continue
+  "$FORMATTER" "$f" >/dev/null
+done
+
+# 2) 42 ヘッダ Updated 行を現在時刻に bump （sed でその場書き換え）
+echo "→ ヘッダ Updated 行を現在時刻に更新"
+NOW="$(date '+%Y/%m/%d %H:%M:%S')"
+for f in "${FILES[@]}"; do
+  [[ -f "$f" ]] || continue
+  # in-place 置換: macOS / Linux 両対応に -i.bak → 後で .bak を削除
+  sed -i.bak -E \
+    "s|^(/\\*   Updated: )[0-9]{4}/[0-9]{2}/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}( by .*)\$|\\1${NOW}\\2|" \
+    "$f"
+  rm -f "${f}.bak"
+  git add -- "$f"
+done
+
+# 2) Norminette 走査
+echo "→ norminette"
+if ! "$NORMINETTE" "${FILES[@]}"; then
+  echo "✘ Norminette 違反があります。修正してから再コミットしてください。"
+  exit 1
+fi
+
+echo "✔ pre-commit OK (${#FILES[@]} files)"
