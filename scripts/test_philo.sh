@@ -126,10 +126,10 @@ run_case "subject S4: 4 410 200 200 no death" "4 410 200 200" expect_no_death
 run_case "subject S5: 4 310 200 100 at least one dies" \
   "4 310 200 100" expect_died
 
-# S6: N=2 ぎりぎり cycle、死亡時刻精度（10ms 以内）
-# ttd=200, tte=100, tts=100. cycle=200ms。死ぬなら ttd 直後（<= 215ms）に出るはず。
-run_case "subject S6: 2 200 100 100 timing precision" "2 200 100 100" \
-  "awk '/ died$/ { if (\$1 <= 215) ok=1; else { print \"late:\", \$1 } } END { exit (ok || !died ? 0 : 1) } { died=1 }'"
+# S6: N=2 必死シナリオで死亡時刻精度を検査。ttd=100, tte=60, tts=60 → cycle 120 で必ず死ぬ。
+# 死亡時刻は last_meal=0 + ttd=100 から +10ms 以内（≤110ms）が subject 許容。
+run_case "subject S6: 2 100 60 60 death within ttd+10ms" "2 100 60 60" \
+  "awk '/ died$/ { if (\$1 <= 110) ok=1; else print \"late:\", \$1 } END { exit (ok ? 0 : 1) }'"
 
 # 補助テスト ----------------------------------------------------------------
 
