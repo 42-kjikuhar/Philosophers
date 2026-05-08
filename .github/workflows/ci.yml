@@ -52,3 +52,18 @@ jobs:
 
       - name: Verify 42 header consistency
         run: bash scripts/check_header.sh philo
+
+  tests:
+    runs-on: ubuntu-latest
+    # 実行系テストもローカル(macOS)と同じく clang で組む
+    env:
+      CC: clang
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build philo (with clang)
+        working-directory: philo
+        run: make CC=clang
+
+      - name: Run philosophers scenario tests
+        run: bash scripts/test_philo.sh
