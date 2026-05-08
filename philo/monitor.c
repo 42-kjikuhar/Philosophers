@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:52:32 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 05:23:40 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 05:24:54 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,9 +88,9 @@ void	*monitor_routine(void *arg)
 	sim = (t_sim *)arg;
 	while (!is_finished(sim))
 	{
-		if (check_one_death(sim))
-			return (NULL);
 		if (check_all_satisfied(sim))
+			return (NULL);
+		if (check_one_death(sim))
 			return (NULL);
 		usleep(1000);
 	}
