@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:52:32 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 05:17:16 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 05:34:37 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,22 @@
 
 static void	take_forks(t_philo *p)
 {
-	pthread_mutex_lock(&p->sim->forks[p->left_fork]);
+	int	first;
+	int	second;
+
+	if (p->left_fork < p->right_fork)
+	{
+		first = p->left_fork;
+		second = p->right_fork;
+	}
+	else
+	{
+		first = p->right_fork;
+		second = p->left_fork;
+	}
+	pthread_mutex_lock(&p->sim->forks[first]);
 	log_event(p->sim, p->id, "has taken a fork");
-	pthread_mutex_lock(&p->sim->forks[p->right_fork]);
+	pthread_mutex_lock(&p->sim->forks[second]);
 	log_event(p->sim, p->id, "has taken a fork");
 }
 
