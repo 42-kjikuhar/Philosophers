@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # ステージされた C ソース（.c / .h）に c_formatter_42 を実行する。
 # 整形と同時に 42 ヘッダの `Updated:` 行が現在時刻に更新される。
-# その後、再ステージしてから norminette でチェックする。
-# 禁止関数の検査は `make forbidden` で別途行う（pre-commit を遅くしないため）。
+# その後、再ステージしてから norminette → ビルド → 禁止関数検査（バイナリレベル）の順で走る。
 
 set -eu
 
@@ -61,10 +60,22 @@ for f in "${FILES[@]}"; do
   git add -- "$f"
 done
 
-# 2) Norminette 走査
+# 3) Norminette 走査
 echo "→ norminette"
 if ! "$NORMINETTE" "${FILES[@]}"; then
   echo "✘ Norminette 違反があります。修正してから再コミットしてください。"
+  exit 1
+fi
+
+# 4) ビルド（philo） → バイナリレベル禁止関数検査
+echo "→ make philo"
+if ! ( cd "$ROOT/philo" && make >/dev/null 2>&1 ); then
+  echo "✘ ビルドに失敗しました。'cd philo && make' を実行してエラーを確認してください。"
+  exit 1
+fi
+
+echo "→ 禁止関数チェック（バイナリ）"
+if ! "$ROOT/scripts/check_forbidden.sh" philo; then
   exit 1
 fi
 
