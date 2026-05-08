@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:03:30 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 04:15:07 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 05:08:43 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,17 @@ long	current_time_ms(void)
 	return ((long)tv.tv_sec * 1000 + (long)tv.tv_usec / 1000);
 }
 
-void	print_log(t_sim *sim, int id, const char *msg, long now)
+void	log_event(t_sim *sim, int id, const char *msg)
 {
-	(void)sim;
-	printf("%ld %d %s\n", now, id, msg);
+	long	now;
+
+	pthread_mutex_lock(&sim->print_mutex);
+	pthread_mutex_lock(&sim->state_mutex);
+	if (!sim->finished)
+	{
+		now = current_time_ms() - sim->start_time;
+		printf("%ld %d %s\n", now, id, msg);
+	}
+	pthread_mutex_unlock(&sim->state_mutex);
+	pthread_mutex_unlock(&sim->print_mutex);
 }

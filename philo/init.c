@@ -6,41 +6,14 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:03:30 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 04:44:13 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 05:08:43 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	init_philo(t_sim *sim, int i)
+static int	parse_args(t_sim *sim, int argc, char **argv)
 {
-	sim->fork_used[i] = 0;
-	sim->philos[i].id = i + 1;
-	sim->philos[i].left_fork = i;
-	sim->philos[i].right_fork = (i + 1) % sim->n;
-	sim->philos[i].state = THINKING;
-	sim->philos[i].last_meal_time = 0;
-	sim->philos[i].state_until = 0;
-	sim->philos[i].meals_eaten = 0;
-}
-
-static int	alloc_sim(t_sim *sim)
-{
-	sim->philos = malloc(sizeof(t_philo) * sim->n);
-	sim->fork_used = malloc(sizeof(int) * sim->n);
-	if (!sim->philos || !sim->fork_used)
-	{
-		free(sim->philos);
-		free(sim->fork_used);
-		return (1);
-	}
-	return (0);
-}
-
-int	init_sim(t_sim *sim, int argc, char **argv)
-{
-	int	i;
-
 	if (argc != 5 && argc != 6)
 		return (1);
 	sim->n = ft_atoi(argv[1]);
@@ -51,15 +24,75 @@ int	init_sim(t_sim *sim, int argc, char **argv)
 		sim->max_meals = ft_atoi(argv[5]);
 	else
 		sim->max_meals = -1;
-	sim->start_time = current_time_ms();
-	sim->finished = 0;
-	if (alloc_sim(sim) != 0)
+	if (sim->n <= 0 || sim->time_to_die <= 0 || sim->time_to_eat <= 0
+		|| sim->time_to_sleep <= 0)
+		return (1);
+	return (0);
+}
+
+static int	init_mutexes(t_sim *sim)
+{
+	int	i;
+
+	if (pthread_mutex_init(&sim->print_mutex, NULL) != 0)
+		return (1);
+	if (pthread_mutex_init(&sim->state_mutex, NULL) != 0)
 		return (1);
 	i = 0;
 	while (i < sim->n)
 	{
-		init_philo(sim, i);
+		if (pthread_mutex_init(&sim->forks[i], NULL) != 0)
+			return (1);
 		i++;
 	}
 	return (0);
+}
+
+static void	init_philos(t_sim *sim)
+{
+	int	i;
+
+	i = 0;
+	while (i < sim->n)
+	{
+		sim->philos[i].id = i + 1;
+		sim->philos[i].left_fork = i;
+		sim->philos[i].right_fork = (i + 1) % sim->n;
+		sim->philos[i].last_meal_time = 0;
+		sim->philos[i].meals_eaten = 0;
+		sim->philos[i].sim = sim;
+		i++;
+	}
+}
+
+int	init_sim(t_sim *sim, int argc, char **argv)
+{
+	if (parse_args(sim, argc, argv) != 0)
+		return (1);
+	sim->finished = 0;
+	sim->start_time = current_time_ms();
+	sim->philos = malloc(sizeof(t_philo) * sim->n);
+	sim->forks = malloc(sizeof(pthread_mutex_t) * sim->n);
+	if (!sim->philos || !sim->forks)
+		return (1);
+	if (init_mutexes(sim) != 0)
+		return (1);
+	init_philos(sim);
+	return (0);
+}
+
+void	free_sim(t_sim *sim)
+{
+	int	i;
+
+	i = 0;
+	while (i < sim->n)
+	{
+		pthread_mutex_destroy(&sim->forks[i]);
+		i++;
+	}
+	pthread_mutex_destroy(&sim->print_mutex);
+	pthread_mutex_destroy(&sim->state_mutex);
+	free(sim->forks);
+	free(sim->philos);
 }

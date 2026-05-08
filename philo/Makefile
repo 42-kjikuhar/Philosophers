@@ -19,7 +19,7 @@ NAME		:= philosophers
 #─ compile config ────────────────────────────────────────────────────────────
 
 CC			:= cc
-CFLAGS		:= -Wall -Wextra -Werror
+CFLAGS		:= -Wall -Wextra -Werror -pthread
 
 # 開発用の厳格 CFLAGS（make dev で使用）
 DEV_CFLAGS	:= -Wall -Wextra -Werror \
@@ -38,7 +38,7 @@ OBJDIR		:= obj
 
 #─ sources & objects ─────────────────────────────────────────────────────────
 
-SRCS		:= main.c utils.c forks.c update.c init.c
+SRCS		:= main.c init.c utils.c routine.c monitor.c
 OBJS		:= $(SRCS:%.c=$(OBJDIR)/%.o)
 
 #─ colors ────────────────────────────────────────────────────────────────────
