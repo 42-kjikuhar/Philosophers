@@ -97,4 +97,12 @@ asan:
 	@$(CC) $(ASAN_CFLAGS) $(SRCS) -o $(NAME_ASAN)
 	@echo "$(MAGENTA)$(BOLD)[asan build] ./$(NAME_ASAN) — AddressSanitizer + UBSan$(RESET)"
 
-.PHONY: all clean fclean re leak dev asan
+# ThreadSanitizer ビルド（philosophers_tsan に出力）。並行処理のデータ競合検出用。
+NAME_TSAN	:= philosophers_tsan
+TSAN_CFLAGS	:= $(DEV_CFLAGS) -fsanitize=thread -fno-omit-frame-pointer
+
+tsan:
+	@$(CC) $(TSAN_CFLAGS) $(SRCS) -o $(NAME_TSAN)
+	@echo "$(MAGENTA)$(BOLD)[tsan build] ./$(NAME_TSAN) — ThreadSanitizer$(RESET)"
+
+.PHONY: all clean fclean re leak dev asan tsan
