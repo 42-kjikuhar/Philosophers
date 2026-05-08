@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 03:34:10 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 03:34:56 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 03:37:17 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,7 @@ int	free_all(int philo_num, pthread_t *philos, pthread_mutex_t *forks)
 		{
 			pthread_join(philos[i], NULL);
 		}
-		if (&forks[i])
-		{
-			pthread_mutex_destroy(&forks[i]);
-		}
+		pthread_mutex_destroy(&forks[i]);
 		i++;
 	}
 	if (philos)
