@@ -5,6 +5,8 @@
 #   3. ヘッダの日付整合性
 #       3-a. Created <= Updated （時系列の逆転がないか）
 #       3-b. Updated >= 直近コミット時刻 - 60s（ファイル変更時にヘッダが更新されているか）
+#   4. ヘッダ内のファイル名が実ファイル名（basename）と一致しているか
+#       例: philo.h の中の 42 ヘッダに「serial_philo.h」と書かれていたら検出
 #
 # norminette はヘッダの「存在と構文」を見るが、ユーザー名混在や日付整合性は捕捉しないため別途検査する。
 #
@@ -20,6 +22,7 @@ USERS=()
 NO_HEADER=()
 DATE_BAD_ORDER=()
 DATE_STALE=()
+NAME_MISMATCH=()
 
 # 日付パース: macOS と Linux の両対応で "YYYY/MM/DD HH:MM:SS" → epoch
 to_epoch() {
@@ -44,6 +47,13 @@ for dir in "${TARGETS[@]}"; do
     if [[ "$first" != "/* ************************************************************************** */" ]]; then
       NO_HEADER+=("$f")
       continue
+    fi
+
+    # 42 ヘッダ内ファイル名（4行目）と実ファイル名の照合
+    header_name="$(sed -n '4p' "$f" | sed -E 's|^/\*[[:space:]]+([^[:space:]]+).*|\1|')"
+    actual_name="$(basename "$f")"
+    if [[ -n "$header_name" && "$header_name" != "$actual_name" ]]; then
+      NAME_MISMATCH+=("$f::header=$header_name / actual=$actual_name")
     fi
 
     # By: 行からユーザー名を抽出
@@ -119,6 +129,17 @@ fi
 if [[ ${#DATE_STALE[@]} -gt 0 ]]; then
   echo "✘ Updated が直近コミット時刻より古い（ヘッダ未更新の疑い）:"
   for x in "${DATE_STALE[@]}"; do
+    file="${x%%::*}"; rest="${x#*::}"
+    echo "    $file"
+    echo "      $rest"
+  done
+  FAIL=1
+fi
+
+# 4) ヘッダ内ファイル名と実ファイル名の不一致
+if [[ ${#NAME_MISMATCH[@]} -gt 0 ]]; then
+  echo "✘ ヘッダ内ファイル名と実ファイル名が一致していません:"
+  for x in "${NAME_MISMATCH[@]}"; do
     file="${x%%::*}"; rest="${x#*::}"
     echo "    $file"
     echo "      $rest"
