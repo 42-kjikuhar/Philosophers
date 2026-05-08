@@ -40,6 +40,7 @@ IGNORE_LIST=(
   _cxa_atexit cxa_atexit
   _gmon_start__ gmon_start__
   _stack_chk_fail stack_chk_fail _stack_chk_guard stack_chk_guard
+  __stack_chk_fail __stack_chk_guard
   ITM_deregisterTMCloneTable ITM_registerTMCloneTable
   _chkstk chkstk
 )
