@@ -26,8 +26,23 @@ ALLOW_PHILO=(
   pthread_mutex_lock pthread_mutex_unlock
 )
 
-# macOS / Linux のランタイム・ビルトイン由来シンボルは無視する
-IGNORE_PATTERNS='^(_?_(stack_chk_|chkstk|builtin_|bzero_chk_|memcpy_chk_|memset_chk_|strncpy_chk_|sprintf_chk_|strcpy_chk_|fprintf_chk_|printf_chk_|snprintf_chk_|vsnprintf_chk_|stack_chk_guard|stack_chk_fail|emutls_|ctzdi2|clzdi2)|dyld_stub_binder|atexit|_exit|__cxa_atexit|__libc_start_main|_init|_fini|_DYNAMIC|_GLOBAL_OFFSET_TABLE_|main|_main|.*@@.*)$'
+# macOS / Linux のランタイム・ビルトイン・リンカ生成シンボル一覧（無視する）。
+# nm の出力は OS によって接頭の `_` が付いたり付かなかったりするので、
+# 「先頭 _ を 1 つ剥がした後の形」で揃えて列挙する。
+IGNORE_LIST=(
+  main _main
+  _init _fini
+  _DYNAMIC _GLOBAL_OFFSET_TABLE_
+  dyld_stub_binder
+  atexit _exit
+  _libc_start_main libc_start_main
+  _cxa_finalize cxa_finalize
+  _cxa_atexit cxa_atexit
+  _gmon_start__ gmon_start__
+  _stack_chk_fail stack_chk_fail _stack_chk_guard stack_chk_guard
+  ITM_deregisterTMCloneTable ITM_registerTMCloneTable
+  _chkstk chkstk
+)
 
 contains() {
   local needle="$1"; shift
@@ -57,14 +72,14 @@ audit_dir() {
     local sym
     while IFS= read -r sym; do
       [[ -z "$sym" ]] && continue
-      [[ "$sym" =~ $IGNORE_PATTERNS ]] && continue
+      contains "$sym" "${IGNORE_LIST[@]}" && continue
       if ! contains "$sym" "${allow[@]}"; then
         echo "  ✘ FORBIDDEN: $sym"
         violations=$((violations + 1))
       fi
-    done < <(nm -u "$bin" 2>/dev/null | awk 'NF>0{print $NF}' | sed 's/^_//' | sort -u)
+    done < <(nm -u "$bin" 2>/dev/null | awk 'NF>0{print $NF}' | sed -E 's/@@?.*$//' | sed 's/^_//' | sort -u)
     # 補足: macOS の nm -u は 1 列出力、GNU の nm は "U <sym>" 形式。
-    # 末尾フィールドを取って Mach-O の先頭アンダースコアを剥がす。
+    # 末尾フィールドを取り、GLIBC の "@VERSION" 接尾辞を剥がし、Mach-O の先頭アンダースコアを 1 つ剥がす。
     if [[ $violations -gt 0 ]]; then
       FAIL=1
       echo "  → バイナリで $violations 件の違反"
