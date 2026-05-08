@@ -78,12 +78,18 @@ fclean: clean
 
 re: fclean all
 
-leak: $(NAME)
-	@echo "$(MAGENTA)$(BOLD)========================================="
-	@echo "    Checking Memory Leaks..."
-	@echo "=========================================$(RESET)"
-	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) "test string"
-	@echo "$(GREEN)$(BOLD)Leak check completed!$(RESET)"
+# valgrind によるメモリリーク検査。Linux 専用（macOS arm64 では非対応）。
+# 厳しめ設定: definite + indirect + possible のいずれかを検出したら exit 1。
+# pthread の TLS 起因で発生する still-reachable は無視（これは本物のリークではない）。
+# 使い方: make valgrind ARGS="5 800 200 200 3"   （ARGS 省略時は規定シナリオ）
+ARGS ?= 5 800 200 200 3
+
+valgrind: $(NAME)
+	@echo "$(MAGENTA)$(BOLD)[valgrind] ./$(NAME) $(ARGS)$(RESET)"
+	@valgrind --leak-check=full --show-leak-kinds=definite,indirect,possible \
+	  --errors-for-leak-kinds=definite,indirect,possible \
+	  --track-origins=yes --error-exitcode=1 \
+	  ./$(NAME) $(ARGS)
 
 dev:
 	@$(MAKE) re CFLAGS="$(DEV_CFLAGS)"
@@ -105,4 +111,4 @@ tsan:
 	@$(CC) $(TSAN_CFLAGS) $(SRCS) -o $(NAME_TSAN)
 	@echo "$(MAGENTA)$(BOLD)[tsan build] ./$(NAME_TSAN) — ThreadSanitizer$(RESET)"
 
-.PHONY: all clean fclean re leak dev asan tsan
+.PHONY: all clean fclean re valgrind dev asan tsan
