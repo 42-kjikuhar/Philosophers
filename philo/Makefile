@@ -21,6 +21,17 @@ NAME		:= philosophers
 CC			:= cc
 CFLAGS		:= -Wall -Wextra -Werror
 
+# 開発用の厳格 CFLAGS（make dev で使用）
+DEV_CFLAGS	:= -Wall -Wextra -Werror \
+               -Wpedantic -Wshadow \
+               -Wstrict-prototypes -Wmissing-prototypes \
+               -Wfloat-equal -Wundef -Wpointer-arith \
+               -Wcast-align -Wformat=2 -Winit-self \
+               -Wbad-function-cast -Wnested-externs \
+               -Wstrict-aliasing=2 -Wdouble-promotion \
+               -Wunreachable-code -Wredundant-decls \
+               -O0 -g3 -std=c11
+
 #─ directory name ────────────────────────────────────────────────────────────
 
 OBJDIR		:= obj
@@ -74,4 +85,8 @@ leak: $(NAME)
 	@valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(NAME) "test string"
 	@echo "$(GREEN)$(BOLD)Leak check completed!$(RESET)"
 
-.PHONY: all clean fclean re leak
+dev:
+	@$(MAKE) re CFLAGS="$(DEV_CFLAGS)"
+	@echo "$(MAGENTA)$(BOLD)[dev build] strict warnings + debug symbols$(RESET)"
+
+.PHONY: all clean fclean re leak dev
