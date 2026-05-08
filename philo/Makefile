@@ -27,7 +27,7 @@ OBJDIR		:= obj
 
 #─ sources & objects ─────────────────────────────────────────────────────────
 
-SRCS		:= main.c threads.c
+SRCS		:= main.c threads.c utils.c
 OBJS		:= $(SRCS:%.c=$(OBJDIR)/%.o)
 
 #─ colors ────────────────────────────────────────────────────────────────────

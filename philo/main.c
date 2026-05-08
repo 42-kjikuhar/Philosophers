@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 01:36:25 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 03:33:29 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 03:46:45 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,12 @@ t_philo_info	init_info(int argc, char const *argv[])
 {
 	t_philo_info	info;
 
-	info.philo_num = atoi(argv[1]);
-	info.time_to_die_ms = atoi(argv[2]);
-	info.time_to_eat_ms = atoi(argv[3]);
-	info.time_to_sleep_ms = atoi(argv[4]);
+	info.philo_num = ft_atoi(argv[1]);
+	info.time_to_die_ms = ft_atoi(argv[2]);
+	info.time_to_eat_ms = ft_atoi(argv[3]);
+	info.time_to_sleep_ms = ft_atoi(argv[4]);
 	if (argc == 6)
-		info.number_of_times_each_philosopher_must_eat = atoi(argv[5]);
+		info.number_of_times_each_philosopher_must_eat = ft_atoi(argv[5]);
 	return (info);
 }
 

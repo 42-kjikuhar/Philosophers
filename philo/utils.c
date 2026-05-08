@@ -1,36 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/11 11:39:50 by kjikuhar          #+#    #+#             */
+/*   Created: 2026/05/09 03:45:51 by kjikuhar          #+#    #+#             */
 /*   Updated: 2026/05/09 03:46:45 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-# define PHILO_H
+#include "philo.h"
 
-# include <pthread.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
-
-typedef struct s_philo_info
+int	ft_atoi(const char *s)
 {
-	int	philo_num;
-	int	time_to_die_ms;
-	int	time_to_eat_ms;
-	int	time_to_sleep_ms;
-	int	number_of_times_each_philosopher_must_eat;
-}		t_philo_info;
+	long	n;
+	int		sign;
 
-int		free_all(int philo_num, pthread_t *philos, pthread_mutex_t *forks);
-int		prepare_forks(int philo_num, pthread_mutex_t *forks);
-int		gather_philos(int philo_num, pthread_t *philos);
-void	*philo_routine(void *arg);
-int		ft_atoi(const char *s);
-
-#endif
+	n = 0;
+	sign = 1;
+	while (*s == ' ' || (*s >= 9 && *s <= 13))
+		s++;
+	if (*s == '+' || *s == '-')
+	{
+		if (*s == '-')
+			sign = -1;
+		s++;
+	}
+	while (*s >= '0' && *s <= '9')
+	{
+		n = n * 10 + (*s - '0');
+		s++;
+	}
+	return ((int)(n * sign));
+}
