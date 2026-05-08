@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+  workflow_dispatch:
+
+jobs:
+  norminette:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install norminette 3.3.55
+        run: pip install --no-cache-dir norminette==3.3.55
+
+      - name: Verify norminette version
+        run: norminette --version
+
+      - name: Run norminette (philo)
+        run: norminette philo/
+
+  forbidden:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build philo
+        working-directory: philo
+        run: make
+
+      - name: Run forbidden-function audit
+        run: bash scripts/check_forbidden.sh philo
+
+  header:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify 42 header consistency
+        run: bash scripts/check_header.sh philo
