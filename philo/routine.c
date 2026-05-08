@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:52:32 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 05:08:43 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 05:17:16 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,10 @@ static void	release_forks(t_philo *p)
 
 static void	do_eat(t_philo *p)
 {
-	pthread_mutex_lock(&p->sim->state_mutex);
+	pthread_mutex_lock(&p->meal_mutex);
 	p->last_meal_time = current_time_ms() - p->sim->start_time;
 	p->meals_eaten++;
-	pthread_mutex_unlock(&p->sim->state_mutex);
+	pthread_mutex_unlock(&p->meal_mutex);
 	log_event(p->sim, p->id, "is eating");
 	usleep(p->sim->time_to_eat * 1000);
 }

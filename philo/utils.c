@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:03:30 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 05:08:43 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 05:17:16 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,12 @@ void	log_event(t_sim *sim, int id, const char *msg)
 	long	now;
 
 	pthread_mutex_lock(&sim->print_mutex);
-	pthread_mutex_lock(&sim->state_mutex);
+	pthread_mutex_lock(&sim->death_mutex);
 	if (!sim->finished)
 	{
 		now = current_time_ms() - sim->start_time;
 		printf("%ld %d %s\n", now, id, msg);
 	}
-	pthread_mutex_unlock(&sim->state_mutex);
+	pthread_mutex_unlock(&sim->death_mutex);
 	pthread_mutex_unlock(&sim->print_mutex);
 }

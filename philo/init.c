@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:03:30 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 05:08:43 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 05:17:16 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,14 @@ static int	init_mutexes(t_sim *sim)
 
 	if (pthread_mutex_init(&sim->print_mutex, NULL) != 0)
 		return (1);
-	if (pthread_mutex_init(&sim->state_mutex, NULL) != 0)
+	if (pthread_mutex_init(&sim->death_mutex, NULL) != 0)
 		return (1);
 	i = 0;
 	while (i < sim->n)
 	{
 		if (pthread_mutex_init(&sim->forks[i], NULL) != 0)
+			return (1);
+		if (pthread_mutex_init(&sim->philos[i].meal_mutex, NULL) != 0)
 			return (1);
 		i++;
 	}
@@ -89,10 +91,11 @@ void	free_sim(t_sim *sim)
 	while (i < sim->n)
 	{
 		pthread_mutex_destroy(&sim->forks[i]);
+		pthread_mutex_destroy(&sim->philos[i].meal_mutex);
 		i++;
 	}
 	pthread_mutex_destroy(&sim->print_mutex);
-	pthread_mutex_destroy(&sim->state_mutex);
+	pthread_mutex_destroy(&sim->death_mutex);
 	free(sim->forks);
 	free(sim->philos);
 }

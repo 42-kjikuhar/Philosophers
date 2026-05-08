@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:52:32 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 05:08:43 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 05:17:16 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,23 @@ int	is_finished(t_sim *sim)
 {
 	int	f;
 
-	pthread_mutex_lock(&sim->state_mutex);
+	pthread_mutex_lock(&sim->death_mutex);
 	f = sim->finished;
-	pthread_mutex_unlock(&sim->state_mutex);
+	pthread_mutex_unlock(&sim->death_mutex);
 	return (f);
+}
+
+static void	declare_death(t_sim *sim, int id, long now)
+{
+	pthread_mutex_lock(&sim->print_mutex);
+	pthread_mutex_lock(&sim->death_mutex);
+	if (!sim->finished)
+	{
+		printf("%ld %d died\n", now, id);
+		sim->finished = 1;
+	}
+	pthread_mutex_unlock(&sim->death_mutex);
+	pthread_mutex_unlock(&sim->print_mutex);
 }
 
 static int	check_one_death(t_sim *sim)
@@ -31,19 +44,15 @@ static int	check_one_death(t_sim *sim)
 	i = 0;
 	while (i < sim->n)
 	{
-		pthread_mutex_lock(&sim->state_mutex);
-		now = current_time_ms() - sim->start_time;
+		pthread_mutex_lock(&sim->philos[i].meal_mutex);
 		last = sim->philos[i].last_meal_time;
-		if (now - last > sim->time_to_die && !sim->finished)
+		pthread_mutex_unlock(&sim->philos[i].meal_mutex);
+		now = current_time_ms() - sim->start_time;
+		if (now - last > sim->time_to_die)
 		{
-			pthread_mutex_lock(&sim->print_mutex);
-			printf("%ld %d died\n", now, sim->philos[i].id);
-			pthread_mutex_unlock(&sim->print_mutex);
-			sim->finished = 1;
-			pthread_mutex_unlock(&sim->state_mutex);
+			declare_death(sim, sim->philos[i].id, now);
 			return (1);
 		}
-		pthread_mutex_unlock(&sim->state_mutex);
 		i++;
 	}
 	return (0);
@@ -52,22 +61,23 @@ static int	check_one_death(t_sim *sim)
 static int	check_all_satisfied(t_sim *sim)
 {
 	int	i;
+	int	meals;
 
 	if (sim->max_meals < 0)
 		return (0);
-	pthread_mutex_lock(&sim->state_mutex);
 	i = 0;
 	while (i < sim->n)
 	{
-		if (sim->philos[i].meals_eaten < sim->max_meals)
-		{
-			pthread_mutex_unlock(&sim->state_mutex);
+		pthread_mutex_lock(&sim->philos[i].meal_mutex);
+		meals = sim->philos[i].meals_eaten;
+		pthread_mutex_unlock(&sim->philos[i].meal_mutex);
+		if (meals < sim->max_meals)
 			return (0);
-		}
 		i++;
 	}
+	pthread_mutex_lock(&sim->death_mutex);
 	sim->finished = 1;
-	pthread_mutex_unlock(&sim->state_mutex);
+	pthread_mutex_unlock(&sim->death_mutex);
 	return (1);
 }
 

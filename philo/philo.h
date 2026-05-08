@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:39:50 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 05:08:43 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 05:17:16 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ typedef struct s_sim
 	long			start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_mutex;
-	pthread_mutex_t	state_mutex;
+	pthread_mutex_t	death_mutex;
 	pthread_t		monitor;
 	struct s_philo	*philos;
 	int				finished;
@@ -42,6 +42,7 @@ typedef struct s_philo
 	int				right_fork;
 	long			last_meal_time;
 	int				meals_eaten;
+	pthread_mutex_t	meal_mutex;
 	pthread_t		thread;
 	t_sim			*sim;
 }					t_philo;
