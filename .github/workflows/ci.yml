@@ -29,12 +29,18 @@ jobs:
 
   forbidden:
     runs-on: ubuntu-latest
+    # ローカル(macOS)は cc=clang。CI も clang に揃えて printf→puts 最適化等の差異を排除する。
+    env:
+      CC: clang
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build philo
+      - name: Verify clang version
+        run: clang --version
+
+      - name: Build philo (with clang)
         working-directory: philo
-        run: make
+        run: make CC=clang
 
       - name: Run forbidden-function audit
         run: bash scripts/check_forbidden.sh philo
