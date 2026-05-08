@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:03:30 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 04:15:07 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 04:32:19 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,16 @@ int	init_sim(t_sim *sim, int argc, char **argv)
 {
 	int	i;
 
-	if (argc != 6)
+	if (argc != 5 && argc != 6)
 		return (1);
 	sim->n = ft_atoi(argv[1]);
 	sim->time_to_die = ft_atoi(argv[2]);
 	sim->time_to_eat = ft_atoi(argv[3]);
 	sim->time_to_sleep = ft_atoi(argv[4]);
-	sim->simulation_time = ft_atoi(argv[5]);
+	if (argc == 6)
+		sim->max_meals = ft_atoi(argv[5]);
+	else
+		sim->max_meals = -1;
 	sim->start_time = current_time_ms();
 	sim->finished = 0;
 	if (alloc_sim(sim) != 0)

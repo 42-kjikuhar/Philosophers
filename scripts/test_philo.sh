@@ -23,15 +23,40 @@ if [[ ! -x "$BIN" ]]; then
   ( cd "$ROOT/philo" && make >/dev/null )
 fi
 
+# gtimeout を優先（macOS coreutils 環境対策）。なければ bash ネイティブの fallback を使う。
+TIMEOUT_BIN="$(command -v gtimeout || command -v timeout || true)"
+
+# bash ネイティブ timeout: 子プロセス起動 → 監視 → 期限切れで TERM/KILL。
+# 標準出力をキャプチャしたいので、出力先ファイル経由で受け渡す。
+run_with_bash_timeout() {
+  local secs="$1" outfile="$2"; shift 2
+  "$@" >"$outfile" 2>&1 &
+  local pid=$!
+  ( sleep "$secs"; kill -TERM "$pid" 2>/dev/null; sleep 0.5; kill -KILL "$pid" 2>/dev/null ) >/dev/null 2>&1 &
+  local watchdog=$!
+  wait "$pid" 2>/dev/null
+  local rc=$?
+  kill "$watchdog" 2>/dev/null
+  wait "$watchdog" 2>/dev/null
+  return $rc
+}
+
 # 実行と判定のラッパ。
 # 引数: $1=test name, $2=コマンドライン引数文字列, $3=判定関数名（出力をstdinで受け取り 0=pass / 非0=fail）
+# must_eat なしのケースは binary が自然終了しないので、外側で 5 秒の壁時計タイムアウトを掛ける。
 run_case() {
   local name="$1" args="$2" judge="$3"
-  local out
-  # set +e で一時的に exit code を許容
+  local out tmpfile
+  tmpfile="$(mktemp)"
   set +e
-  out="$(eval "$BIN" "$args" 2>&1)"
+  if [[ -n "$TIMEOUT_BIN" ]]; then
+    "$TIMEOUT_BIN" 5 bash -c "$BIN $args" >"$tmpfile" 2>&1
+  else
+    run_with_bash_timeout 5 "$tmpfile" bash -c "$BIN $args"
+  fi
   set -e
+  out="$(cat "$tmpfile")"
+  rm -f "$tmpfile"
   if eval "$judge" <<<"$out"; then
     echo "  ✔ $name"
     PASS=$((PASS + 1))
@@ -81,27 +106,31 @@ expect_no_adjacent_eat() {
 
 echo "=== philosophers behavior tests ==="
 
-# Case 1: 大量に余裕のあるパラメータ → 死なない
-# 5人, ttd=800ms, tte=200ms, tts=200ms, 1500ms シミュ
-run_case "no death with generous ttd (5 800 200 200 1500)" \
-  "5 800 200 200 1500" expect_no_death
+# Case 1: must_eat 指定で全員食べ切ったら死なずに正常終了
+run_case "no death when must_eat satisfied (5 800 200 200 5)" \
+  "5 800 200 200 5" expect_no_death
 
-# Case 2: ttd < tte, 食事中に必ず死ぬ
-# 1人, ttd=100ms, tte=200ms（食事200ms中に100ms超で死亡判定）
-run_case "must die when ttd < tte (1 100 200 200 2000)" \
-  "1 100 200 200 2000" expect_died
+# Case 2: ttd < tte, 食事中に必ず死ぬ（5人版で確実）
+run_case "must die when ttd < tte (5 100 200 200)" \
+  "5 100 200 200" expect_died
 
 # Case 3: 出力フォーマット <ms> <id> <state>
-run_case "log format <ms> <id> <state> (5 800 200 200 800)" \
-  "5 800 200 200 800" expect_log_format
+run_case "log format <ms> <id> <state> (5 800 200 200 3)" \
+  "5 800 200 200 3" expect_log_format
 
 # Case 4: 隣接ペアが同時 eating していない
-run_case "no adjacent simultaneous eating (5 800 200 200 1500)" \
-  "5 800 200 200 1500" "expect_no_adjacent_eat 5"
+run_case "no adjacent simultaneous eating (5 800 200 200 5)" \
+  "5 800 200 200 5" "expect_no_adjacent_eat 5"
 
-# Case 5: 引数不正 → 非 0 exit & usage 出力
+# Case 5: 引数不正（必須4個不足）→ 非 0 exit & usage 出力
 run_case "argc mismatch returns usage" \
   "3 100 100" "grep -q '^usage:'"
+
+# Case 6: must_eat 指定なし + 余裕パラメータ → 5 秒の wall timeout で打ち切られる
+# 出力に eating があり、died が無いこと
+run_case "no must_eat keeps eating without death (5 800 200 200)" \
+  "5 800 200 200" \
+  "grep -q 'is eating' && ! grep -q ' died$'"
 
 echo
 echo "──────────────────────"

@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:03:30 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 04:15:07 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 04:32:19 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,22 @@ void	free_sim(t_sim *sim)
 {
 	free(sim->philos);
 	free(sim->fork_used);
+}
+
+static int	all_satisfied(t_sim *sim)
+{
+	int	i;
+
+	if (sim->max_meals < 0)
+		return (0);
+	i = 0;
+	while (i < sim->n)
+	{
+		if (sim->philos[i].meals_eaten < sim->max_meals)
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
 void	run_loop(t_sim *sim)
@@ -33,7 +49,7 @@ void	run_loop(t_sim *sim)
 			i++;
 		}
 		check_death(sim, now);
-		if (now >= sim->simulation_time)
+		if (all_satisfied(sim))
 			sim->finished = 1;
 		usleep(1000);
 	}
@@ -45,7 +61,7 @@ int	main(int argc, char **argv)
 
 	if (init_sim(&sim, argc, argv) != 0)
 	{
-		printf("usage: %s n time_to_die time_to_eat time_to_sleep sim_time\n",
+		printf("usage: %s n time_to_die time_to_eat time_to_sleep [must_eat]\n",
 			argv[0]);
 		return (1);
 	}

@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:03:30 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 04:15:27 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 04:32:19 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ typedef struct s_sim
 	long	time_to_die;
 	long	time_to_eat;
 	long	time_to_sleep;
-	long	simulation_time;
+	int		max_meals;
 	long	start_time;
 	int		*fork_used;
 	t_philo	*philos;
