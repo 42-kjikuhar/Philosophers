@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:03:30 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 04:32:19 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/09 04:44:13 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void	init_philo(t_sim *sim, int i)
 {
 	sim->fork_used[i] = 0;
-	sim->philos[i].id = i;
+	sim->philos[i].id = i + 1;
 	sim->philos[i].left_fork = i;
 	sim->philos[i].right_fork = (i + 1) % sim->n;
 	sim->philos[i].state = THINKING;
