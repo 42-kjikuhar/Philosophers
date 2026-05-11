@@ -6,11 +6,26 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 20:42:12 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/11 21:03:28 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/11 21:05:06 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+static int	ft_atoi(const char *s)
+{
+	int	n;
+
+	n = 0;
+	if (*s == '+')
+		s++;
+	while (*s >= '0' && *s <= '9')
+	{
+		n = n * 10 + (*s - '0');
+		s++;
+	}
+	return (n);
+}
 
 static bool	is_valid_int(const char *s)
 {

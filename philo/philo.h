@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:39:50 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/11 21:03:28 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/11 21:05:06 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ typedef struct s_philo
 	t_sim			*sim;
 }					t_philo;
 
-int					ft_atoi(const char *s);
 long				current_time_ms(void);
 void				log_event(t_sim *sim, int id, const char *msg);
 
