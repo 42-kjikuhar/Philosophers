@@ -73,7 +73,8 @@ clean:
 	@echo "$(CYAN)Object files cleaned.$(RESET)"
 
 fclean: clean
-	@rm -f $(NAME) philosophers_asan philosophers_tsan
+	@rm -f $(NAME) $(NAME_ASAN) $(NAME_TSAN)
+	@rm -rf $(NAME_ASAN).dSYM $(NAME_TSAN).dSYM
 	@echo "$(CYAN)$(NAME) removed.$(RESET)"
 
 re: fclean all
