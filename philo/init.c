@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:03:30 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/11 20:45:17 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/11 20:48:24 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,10 +53,16 @@ static int	init_per_philo_mutexes(t_sim *sim)
 			j++;
 	if (i == sim->n && j == sim->n)
 		return (0);
-	while (j-- > 0)
+	while (j > 0)
+	{
+		j--;
 		pthread_mutex_destroy(&sim->philos[j].meal_mutex);
-	while (i-- > 0)
+	}
+	while (i > 0)
+	{
+		i--;
 		pthread_mutex_destroy(&sim->forks[i]);
+	}
 	return (1);
 }
 
