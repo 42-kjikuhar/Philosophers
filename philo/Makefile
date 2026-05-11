@@ -21,7 +21,6 @@ NAME		:= philo
 CC			:= cc
 CFLAGS		:= -Wall -Wextra -Werror -pthread
 
-# 開発用の厳格 CFLAGS（make dev で使用）
 DEV_CFLAGS	:= -Wall -Wextra -Werror \
                -Wpedantic -Wshadow \
                -Wstrict-prototypes -Wmissing-prototypes \
@@ -79,10 +78,6 @@ fclean: clean
 
 re: fclean all
 
-# valgrind によるメモリリーク検査。Linux 専用（macOS arm64 では非対応）。
-# 厳しめ設定: definite + indirect + possible のいずれかを検出したら exit 1。
-# pthread の TLS 起因で発生する still-reachable は無視（これは本物のリークではない）。
-# 使い方: make valgrind ARGS="5 800 200 200 3"   （ARGS 省略時は規定シナリオ）
 ARGS ?= 5 800 200 200 3
 
 valgrind: $(NAME)
@@ -96,7 +91,6 @@ dev:
 	@$(MAKE) re CFLAGS="$(DEV_CFLAGS)"
 	@echo "$(MAGENTA)$(BOLD)[dev build] strict warnings + debug symbols$(RESET)"
 
-# AddressSanitizer + UndefinedBehaviorSanitizer ビルド（philo_asan に出力）
 NAME_ASAN	:= philo_asan
 ASAN_CFLAGS	:= $(DEV_CFLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer
 
@@ -104,7 +98,6 @@ asan:
 	@$(CC) $(ASAN_CFLAGS) $(SRCS) -o $(NAME_ASAN)
 	@echo "$(MAGENTA)$(BOLD)[asan build] ./$(NAME_ASAN) — AddressSanitizer + UBSan$(RESET)"
 
-# ThreadSanitizer ビルド（philo_tsan に出力）。並行処理のデータ競合検出用。
 NAME_TSAN	:= philo_tsan
 TSAN_CFLAGS	:= $(DEV_CFLAGS) -fsanitize=thread -fno-omit-frame-pointer
 
