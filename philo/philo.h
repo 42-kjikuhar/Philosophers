@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:39:50 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 05:17:16 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/11 20:44:11 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ int					ft_atoi(const char *s);
 long				current_time_ms(void);
 void				log_event(t_sim *sim, int id, const char *msg);
 
+int					parse_args(t_sim *sim, int argc, char **argv);
 int					init_sim(t_sim *sim, int argc, char **argv);
 void				free_sim(t_sim *sim);
 
