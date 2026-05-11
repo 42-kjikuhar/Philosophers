@@ -6,14 +6,16 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:39:50 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/11 20:44:11 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/11 21:03:28 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 
+# include <limits.h>
 # include <pthread.h>
+# include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/time.h>
