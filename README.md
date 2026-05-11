@@ -27,12 +27,12 @@ cd philo
 make
 ```
 
-This produces the executable `philo/philosophers`. Compilation uses `cc -Wall -Wextra -Werror -pthread`.
+This produces the executable `philo/philo`. Compilation uses `cc -Wall -Wextra -Werror -pthread`.
 
 ### Run
 
 ```
-./philosophers number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]
+./philo number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]
 ```
 
 | Argument | Unit | Meaning |
@@ -46,9 +46,9 @@ This produces the executable `philo/philosophers`. Compilation uses `cc -Wall -W
 Examples:
 
 ```sh
-./philosophers 5 800 200 200       # runs until somebody dies
-./philosophers 5 800 200 200 7     # stops after every philosopher has eaten 7 times
-./philosophers 1 800 200 200       # one philosopher with only one fork: must die
+./philo 5 800 200 200       # runs until somebody dies
+./philo 5 800 200 200 7     # stops after every philosopher has eaten 7 times
+./philo 1 800 200 200       # one philosopher with only one fork: must die
 ```
 
 ### Output format
