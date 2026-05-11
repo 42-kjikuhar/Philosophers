@@ -86,6 +86,8 @@ tests, and valgrind.
 
 ### Classical references
 
+- Wikipedia, [*Dining philosophers problem*](https://en.wikipedia.org/wiki/Dining_philosophers_problem) — concise overview of the problem and the
+  classical solutions (resource hierarchy, Chandy/Misra, arbitrator).
 - E. W. Dijkstra, *Hierarchical ordering of sequential processes*, Acta Informatica, 1971 — the original formulation of the Dining Philosophers
   Problem.
 - C. A. R. Hoare, *Communicating Sequential Processes*, 1978.

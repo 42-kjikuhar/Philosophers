@@ -84,6 +84,7 @@ CI（`.github/workflows/ci.yml`）では 5 ジョブを並列実行：norminette
 
 ### 古典的文献
 
+- Wikipedia, [*食事する哲学者の問題*](https://ja.wikipedia.org/wiki/%E9%A3%9F%E4%BA%8B%E3%81%99%E3%82%8B%E5%93%B2%E5%AD%A6%E8%80%85%E3%81%AE%E5%95%8F%E9%A1%8C) / [*Dining philosophers problem*](https://en.wikipedia.org/wiki/Dining_philosophers_problem) — 問題の概要と古典的解法（資源階層 / Chandy-Misra / arbitrator）。
 - E. W. Dijkstra, *Hierarchical ordering of sequential processes*, Acta Informatica, 1971 — Dining Philosophers Problem の原典。
 - C. A. R. Hoare, *Communicating Sequential Processes*, 1978。
 - M. Chandy and J. Misra, *The drinking philosophers problem*, ACM TOPLAS, 1984 — トークンパッシングによる deadlock-free な別解。
