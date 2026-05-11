@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:03:30 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/11 20:01:59 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/11 20:34:27 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,24 +30,38 @@ static int	parse_args(t_sim *sim, int argc, char **argv)
 	return (0);
 }
 
-static int	init_mutexes(t_sim *sim)
+static int	init_global_mutexes(t_sim *sim)
 {
-	int	i;
-
 	if (pthread_mutex_init(&sim->print_mutex, NULL) != 0)
 		return (1);
 	if (pthread_mutex_init(&sim->death_mutex, NULL) != 0)
-		return (1);
-	i = 0;
-	while (i < sim->n)
 	{
-		if (pthread_mutex_init(&sim->forks[i], NULL) != 0)
-			return (1);
-		if (pthread_mutex_init(&sim->philos[i].meal_mutex, NULL) != 0)
-			return (1);
-		i++;
+		pthread_mutex_destroy(&sim->print_mutex);
+		return (1);
 	}
 	return (0);
+}
+
+static int	init_per_philo_mutexes(t_sim *sim)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	while (i < sim->n && pthread_mutex_init(&sim->forks[i], NULL) == 0)
+		i++;
+	j = 0;
+	if (i == sim->n)
+		while (j < sim->n && pthread_mutex_init(&sim->philos[j].meal_mutex,
+				NULL) == 0)
+			j++;
+	if (i == sim->n && j == sim->n)
+		return (0);
+	while (j-- > 0)
+		pthread_mutex_destroy(&sim->philos[j].meal_mutex);
+	while (i-- > 0)
+		pthread_mutex_destroy(&sim->forks[i]);
+	return (1);
 }
 
 static void	init_philos(t_sim *sim)
@@ -73,12 +87,18 @@ int	init_sim(t_sim *sim, int argc, char **argv)
 		return (1);
 	sim->finished = 0;
 	sim->start_time = current_time_ms();
+	if (init_global_mutexes(sim) != 0)
+		return (1);
 	sim->philos = malloc(sizeof(t_philo) * sim->n);
 	sim->forks = malloc(sizeof(pthread_mutex_t) * sim->n);
-	if (!sim->philos || !sim->forks)
+	if (!sim->philos || !sim->forks || init_per_philo_mutexes(sim) != 0)
+	{
+		pthread_mutex_destroy(&sim->print_mutex);
+		pthread_mutex_destroy(&sim->death_mutex);
+		free(sim->philos);
+		free(sim->forks);
 		return (1);
-	if (init_mutexes(sim) != 0)
-		return (1);
+	}
 	init_philos(sim);
 	return (0);
 }
