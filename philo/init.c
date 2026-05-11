@@ -6,11 +6,25 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:03:30 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/11 20:44:11 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/11 20:45:17 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+static int	alloc_buffers(t_sim *sim)
+{
+	sim->philos = malloc(sizeof(t_philo) * sim->n);
+	if (!sim->philos)
+		return (1);
+	sim->forks = malloc(sizeof(pthread_mutex_t) * sim->n);
+	if (!sim->forks)
+	{
+		free(sim->philos);
+		return (1);
+	}
+	return (0);
+}
 
 static int	init_global_mutexes(t_sim *sim)
 {
@@ -71,9 +85,13 @@ int	init_sim(t_sim *sim, int argc, char **argv)
 	sim->start_time = current_time_ms();
 	if (init_global_mutexes(sim) != 0)
 		return (1);
-	sim->philos = malloc(sizeof(t_philo) * sim->n);
-	sim->forks = malloc(sizeof(pthread_mutex_t) * sim->n);
-	if (!sim->philos || !sim->forks || init_per_philo_mutexes(sim) != 0)
+	if (alloc_buffers(sim) != 0)
+	{
+		pthread_mutex_destroy(&sim->print_mutex);
+		pthread_mutex_destroy(&sim->death_mutex);
+		return (1);
+	}
+	if (init_per_philo_mutexes(sim) != 0)
 	{
 		pthread_mutex_destroy(&sim->print_mutex);
 		pthread_mutex_destroy(&sim->death_mutex);
