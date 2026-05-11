@@ -68,8 +68,8 @@ States: `has taken a fork`, `is eating`, `is sleeping`, `is thinking`, `died`. P
 | `make fclean` | Remove object files and binaries |
 | `make re` | `fclean` then `all` |
 | `make dev` | Build with stricter warnings (`-Wpedantic`, `-Wshadow`, `-Wformat=2`, etc.) plus debug symbols |
-| `make asan` | Build with AddressSanitizer + UBSan (output `philosophers_asan`) |
-| `make tsan` | Build with ThreadSanitizer (output `philosophers_tsan`) |
+| `make asan` | Build with AddressSanitizer + UBSan (output `philo_asan`) |
+| `make tsan` | Build with ThreadSanitizer (output `philo_tsan`) |
 | `make valgrind [ARGS="..."]` | Run the binary under valgrind with strict leak checking (Linux only) |
 
 ### Tests
