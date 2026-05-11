@@ -1,197 +1,198 @@
+*This project has been created as part of the 42 curriculum by kjikuhar.*
+
 # Philosophers
 
-42 School の課題 **Dining Philosophers** の実装。pthread + mutex 版（mandatory only）。
+> *"I never thought philosophy would be so deadly."*
 
-## ビルド
+## Description
+
+`Philosophers` is the 42 School project that introduces the basics of multithreading and synchronization in C. The goal is to simulate the classical
+**Dining Philosophers Problem**, in which `N` philosophers sit around a round table alternating between three states — **eating**, **sleeping**, and
+**thinking** — and must share a limited number of forks to avoid both **deadlock** and **starvation**.
+
+This repository implements the **mandatory part** only: each philosopher is a POSIX thread, each fork is a `pthread_mutex_t`, and a separate monitor
+thread watches for death and `must_eat` completion. The simulation must satisfy the strict rules of the subject:
+
+- No data race.
+- No memory leak.
+- Death must be reported within 10 ms of its actual time.
+- Once a philosopher dies, no further log line must be printed.
+
+## Instructions
+
+### Build
 
 ```sh
 cd philo
 make
 ```
 
-成果物: `philo/philosophers`
+This produces the executable `philo/philosophers`. Compilation uses `cc -Wall -Wextra -Werror -pthread`.
 
-## 実行
+### Run
 
 ```
 ./philosophers number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]
 ```
 
-| 引数 | 単位 | 意味 |
-|------|------|------|
-| `number_of_philosophers` | 個 | 哲学者と fork の数（1〜200） |
-| `time_to_die` | ms | 最後に食事を始めてからこの時間を超えると死亡 |
-| `time_to_eat` | ms | 食事に要する時間 |
-| `time_to_sleep` | ms | 睡眠に要する時間 |
-| `number_of_times_each_philosopher_must_eat` | 回 | 任意。全員がこの回数食べたら正常終了 |
+| Argument | Unit | Meaning |
+|----------|------|---------|
+| `number_of_philosophers` | — | Number of philosophers and number of forks |
+| `time_to_die` | ms | A philosopher who has not started eating within this delay since their last meal dies |
+| `time_to_eat` | ms | How long a philosopher spends eating (holding two forks) |
+| `time_to_sleep` | ms | How long a philosopher spends sleeping |
+| `number_of_times_each_philosopher_must_eat` | times | Optional. If every philosopher has eaten at least this many times, the simulation stops |
 
-### 例
+Examples:
 
 ```sh
-./philosophers 5 800 200 200      # 死亡が起きるまで延々と回す
-./philosophers 5 800 200 200 7    # 全員 7 回食べたら終了
-./philosophers 1 800 200 200      # fork 1 本のみ → 800ms 後に死亡
+./philosophers 5 800 200 200       # runs until somebody dies
+./philosophers 5 800 200 200 7     # stops after every philosopher has eaten 7 times
+./philosophers 1 800 200 200       # one philosopher with only one fork: must die
 ```
 
-### 出力フォーマット
+### Output format
 
 ```
-<timestamp_ms> <philo_id> <state>
+<timestamp_in_ms> <philosopher_id> <state>
 ```
 
-| state | 意味 |
-|-------|------|
-| `has taken a fork` | fork を 1 本取得 |
-| `is eating` | 食事開始 |
-| `is sleeping` | 睡眠開始 |
-| `is thinking` | 思考開始 |
-| `died` | 死亡（このログ以降は何も出力されない） |
+States: `has taken a fork`, `is eating`, `is sleeping`, `is thinking`, `died`. Philosopher IDs go from `1` to `number_of_philosophers`.
 
-`philo_id` は 1〜N の 1-origin。
+### Make targets
 
-## ファイル構成
+| Target | Purpose |
+|--------|---------|
+| `make` (or `make all`) | Standard build |
+| `make clean` | Remove object files |
+| `make fclean` | Remove object files and binaries |
+| `make re` | `fclean` then `all` |
+| `make dev` | Build with stricter warnings (`-Wpedantic`, `-Wshadow`, `-Wformat=2`, etc.) plus debug symbols |
+| `make asan` | Build with AddressSanitizer + UBSan (output `philosophers_asan`) |
+| `make tsan` | Build with ThreadSanitizer (output `philosophers_tsan`) |
+| `make valgrind [ARGS="..."]` | Run the binary under valgrind with strict leak checking (Linux only) |
+
+### Tests
+
+```sh
+bash scripts/test_philo.sh       # subject test cases + auxiliary scenarios
+bash scripts/test_valgrind.sh    # memory-leak scenarios (Linux only)
+```
+
+Continuous integration (`.github/workflows/ci.yml`) runs five jobs in parallel: norminette, forbidden-function audit, 42 header consistency, scenario
+tests, and valgrind.
+
+## Resources
+
+### Classical references
+
+- E. W. Dijkstra, *Hierarchical ordering of sequential processes*, Acta Informatica, 1971 — the original formulation of the Dining Philosophers
+  Problem.
+- C. A. R. Hoare, *Communicating Sequential Processes*, 1978.
+- M. Chandy and J. Misra, *The drinking philosophers problem*, ACM TOPLAS, 1984 — alternative deadlock-free formulation by token passing.
+- *Operating System Concepts* (Silberschatz, Galvin, Gagne) — chapter on synchronization and classical problems.
+
+### Technical documentation
+
+- POSIX `pthread_create(3)`, `pthread_mutex_init(3)`, `pthread_mutex_lock(3)`, `pthread_join(3)`, `gettimeofday(2)`, `usleep(3)` — Linux man pages.
+- *The Linux Programming Interface* (Michael Kerrisk), chapters on threads and mutexes.
+- Apple's *Threading Programming Guide*.
+- LLVM ThreadSanitizer and AddressSanitizer documentation.
+- Valgrind manual — `--tool=memcheck`, `--tool=helgrind`.
+
+### Use of AI
+
+Generative AI (Anthropic Claude) was used in this repository as a **collaborative thinking partner** rather than as a code generator. The use was
+limited to the following tasks:
+
+- **Tooling setup**: drafting the project's Makefile targets, git hooks (pre-commit, commit-msg), GitHub Actions CI jobs, the 42-header consistency
+  checker, and the forbidden-function checker. These touch the build environment, not the philosophers algorithm itself.
+- **Conceptual discussion**: clarifying the trade-offs between deadlock-avoidance strategies (min-first, even/odd alternation, Chandy/Misra),
+  explaining the meaning of mutex attributes such as `PTHREAD_MUTEX_ERRORCHECK`, and walking through the difference between TSan, ASan, and valgrind.
+- **Test scenario design**: enumerating the subject's official test cases (`1 800 200 200`, `5 800 200 200`, `5 800 200 200 7`, `4 410 200 200`,
+  `4 310 200 100`, N=2 timing precision) and shaping them into a reproducible bash harness.
+- **Documentation drafting**: this README, in-code comments, and the project's `.github/copilot-instructions.md` review rubric.
+
+All design decisions in `philo/*.c` and `philo/philo.h` — the architecture of the four mutex categories (`forks[]`, `print_mutex`, `death_mutex`,
+per-philosopher `meal_mutex`), the even/odd fork acquisition order with initial stagger, the explicit "think" delay for fairness on odd N, the `N=1`
+special case, and the monitor loop — were reasoned through, reviewed line by line, and committed by the author. The intent has been to keep AI on the
+side of *tedious tooling* and *peer-style discussion*, never as a substitute for understanding.
+
+## Technical choices
+
+### File layout
 
 ```
 philo/
-├── philo.h        構造体・関数プロトタイプ
-├── main.c         エントリーポイント、スレッド作成/join
-├── init.c         引数パース、mutex 初期化、philo 初期化、解放
-├── routine.c      philo スレッドのメインロジック（take_forks / do_eat / 等）
-├── monitor.c      監視スレッド（死亡判定 / must_eat 完了判定）
-├── utils.c        ft_atoi, current_time_ms, log_event
+├── philo.h        Type definitions (t_sim, t_philo) and function prototypes
+├── main.c         Entry point: argument parsing entry, thread creation, join, cleanup
+├── init.c         Parameter validation, mutex initialization, philosopher setup
+├── routine.c      Philosopher thread routine: take_forks / do_eat / release_forks / do_sleep_think
+├── monitor.c      Monitor thread: death detection and must_eat completion check
+├── utils.c        ft_atoi, current_time_ms, log_event (mutex-protected printf)
 └── Makefile
 ```
 
-## 設計
+### Synchronization primitives
 
-### 4 種類の mutex
+| Mutex | Protects |
+|-------|----------|
+| `sim->forks[i]` (N entries) | Acquisition of the i-th fork |
+| `sim->print_mutex` | Serializes `printf` so log lines never overlap |
+| `sim->death_mutex` | The `sim->finished` simulation-stop flag |
+| `philos[i].meal_mutex` (per philosopher) | `last_meal_time` and `meals_eaten` for one philosopher |
 
-| mutex | 守るデータ |
-|-------|-----------|
-| `sim->forks[i]` （N 個） | 各 fork の取得権 |
-| `sim->print_mutex` | `printf` を直列化（ログが混ざらない） |
-| `sim->death_mutex` | `sim->finished`（終了フラグ） |
-| `philos[i].meal_mutex` | 各 philo の `last_meal_time`, `meals_eaten` |
+### Deadlock avoidance
 
-### Deadlock 回避
+In `take_forks`, philosophers with **odd id** lock the **left fork first**, those with **even id** lock the **right fork first**. Because the
+philosophers do not all acquire in the same direction, no circular wait can form.
 
-`take_forks` で **偶数 id は右→左、奇数 id は左→右** の順に取得。全員が同じ方向に取らないことで循環待ち（古典 deadlock）が成立しない。
+### Fairness
 
-### 公平性向上
+For odd `number_of_philosophers`, the odd/even rule alone leaves the wrap-around philosopher in an asymmetric contention pattern. Two additional
+techniques are used:
 
-- **開始 stagger**: 偶数 id の philo は最初に `time_to_eat / 2` ms 待ってからループ開始。同時 fork ラッシュを崩す
-- **明示的 think 遅延**: `do_sleep_think` の末尾で `time_to_die - time_to_eat - time_to_sleep > 100ms` なら半分だけ待つ。N が奇数のときの starvation を防ぐ
+- **Initial stagger** — even-id philosophers wait `time_to_eat / 2` ms before entering the loop, breaking the synchronous fork rush at start.
+- **Explicit thinking delay** — when `time_to_die − time_to_eat − time_to_sleep > 100 ms`, every philosopher waits half of that slack after logging
+  `is thinking`, giving neighbours time to acquire the released forks.
 
-### N=1 特殊扱い
+### Single-philosopher edge case
 
-`philo_routine` で `n==1` を検出した場合、左 fork を 1 本取って `time_to_die + 1ms` 待つだけで return。自スレッドデッドロック（同一 mutex の二重 lock）を回避。
+When `number_of_philosophers == 1`, the philosopher's left and right forks are the same mutex. The routine detects this and, instead of attempting to
+lock the same mutex twice (which would self-deadlock), logs `has taken a fork` once and then sleeps for `time_to_die + 1 ms`. The monitor reports
+`died` and joins the thread cleanly.
 
-### 監視スレッド
+### Monitor loop
 
-`monitor_routine` が独立スレッドとして起動し、1ms 周期で全 philo を巡回：
-
-1. `check_all_satisfied` — 全員 `must_eat` 回数到達なら `finished=1`
-2. `check_one_death` — 誰かが `now - last_meal_time > time_to_die` なら `died` を印字して `finished=1`
-
-`check_all_satisfied` を先に走らせることで、`must_eat` 完了直後の境界条件での誤死亡判定を抑止。
-
-## ツールチェイン
-
-リポジトリには Makefile に加えて以下が同梱：
-
-| コマンド | 内容 |
-|---------|------|
-| `make` | 通常ビルド（`-Wall -Wextra -Werror -pthread`） |
-| `make dev` | 厳格警告フラグ + デバッグシンボル |
-| `make asan` | AddressSanitizer + UBSan ビルド → `philosophers_asan` |
-| `make tsan` | ThreadSanitizer ビルド → `philosophers_tsan` |
-| `make valgrind` | valgrind でメモリリーク検査（Linux 専用） |
-| `make valgrind ARGS="..."` | 引数指定で valgrind 実行 |
-| `make clean` / `make fclean` / `make re` | 標準クリーン操作 |
-
-### サニタイザ実行例
-
-```sh
-make asan && ./philosophers_asan 5 800 200 200 7
-make tsan && ./philosophers_tsan 5 800 200 200 7
-make valgrind ARGS="5 800 200 200 3"
+```
+while (!finished) {
+    if (check_all_satisfied()) return;   // must_eat reached → finished
+    if (check_one_death())     return;   // any philo exceeded time_to_die → log "died" → finished
+    usleep(1000);
+}
 ```
 
-## テスト
+`check_all_satisfied` is evaluated *before* `check_one_death` so that the simulation prefers terminating successfully when a `must_eat` target is
+reached at exactly the same poll as a borderline starvation timer.
 
-```sh
-bash scripts/test_philo.sh        # subject 6 ケース + 補助 3 ケース
-bash scripts/test_valgrind.sh     # valgrind による複数シナリオ leak 検査（Linux）
-```
+### Log race avoidance
 
-### subject 公式テストケース
+`log_event` acquires `print_mutex` and then `death_mutex`, and prints only if `sim->finished` is still false. Combined with the same acquisition order
+inside `declare_death`, this guarantees that no log line is printed after `died`.
 
-| # | コマンド | 期待 |
-|---|---------|------|
-| S1 | `1 800 200 200` | 哲学者は食べずに 800ms 直後に死亡 |
-| S2 | `5 800 200 200` | 死亡なし |
-| S3 | `5 800 200 200 7` | 全員 7 回食べて正常終了 |
-| S4 | `4 410 200 200` | 死亡なし |
-| S5 | `4 310 200 100` | 1 人死亡 |
-| S6 | N=2 で死亡時刻の精度 | ttd から +10ms 以内 |
+## Conformance summary
 
-## CI
+| 42 grading flag | Status |
+|-----------------|--------|
+| Norminette | clean (norminette 3.3.55) |
+| Forbidden function | none used (verified by `nm` against the subject's allow-list) |
+| Crash / undefined behaviour | none observed |
+| Data race | none reported by ThreadSanitizer |
+| Memory leak | none reported by valgrind (`--errors-for-leak-kinds=definite,indirect,possible`) |
+| Death announcement within 10 ms | yes (`2 100 60 60` → death at 101–102 ms) |
+| Subject test cases (mandatory) | all pass — see `scripts/test_philo.sh` |
 
-`.github/workflows/ci.yml` で `develop` / `main` に push / PR 時に 5 ジョブ並列実行：
+## License / Author
 
-| ジョブ | 内容 |
-|--------|------|
-| `norminette` | 42 Norm 準拠検証（norminette 3.3.55） |
-| `forbidden` | バイナリの未定義シンボルを検査して subject 許可関数のみ使用していることを確認 |
-| `header` | 42 ヘッダの整合性（存在 / ユーザー名統一 / 日付 / ファイル名） |
-| `tests` | `scripts/test_philo.sh` を clang ビルドで実行 |
-| `valgrind` | `scripts/test_valgrind.sh` を実行（メモリリーク検査） |
-
-## 規約
-
-### コミット
-
-- **1 行のみ**（本文・空行なし）
-- **日本語**
-- **prefix 必須**: `add:` / `delete:` / `change:` / `fix:` / `docs:` / `chore:`
-- **`Co-authored-by:` を含めない**
-
-`.githooks/commit-msg` が pre-commit hook 経由で検証する。
-
-### コード規約
-
-42 Norm 準拠。`norminette` で機械検査、`c_formatter_42` で整形。
-
-42 ヘッダの `Updated:` 行は **commit のたびに pre-commit hook が現在時刻に自動更新**する（`.githooks/pre-commit`）。
-
-### 開発フロー
-
-```sh
-# 初回のみ: フックを有効化
-./scripts/setup-hooks.sh
-
-# 通常の開発
-git checkout -b feature/xxx develop
-# ... 編集 ...
-git commit -m "add: 新機能"   # pre-commit が format + norm + build + 禁止関数 + テストを実行
-git push origin feature/xxx
-# develop に PR
-```
-
-base ブランチは `develop`。`main` への直接 push は原則しない。
-
-## 禁止関数（subject 準拠）
-
-許可関数のみ使用：
-```
-memset, printf, malloc, free, write, usleep, gettimeofday,
-pthread_create, pthread_detach, pthread_join,
-pthread_mutex_init, pthread_mutex_destroy,
-pthread_mutex_lock, pthread_mutex_unlock
-```
-
-`scripts/check_forbidden.sh` がバイナリの未定義シンボルを `nm` で取り出し、許可リストと突合する。
-
-## ライセンス / 著者
-
-42 Tokyo の学生課題。著者: `kjikuhar`。
+Submitted as part of the 42 Tokyo curriculum.
+Author: `kjikuhar`
