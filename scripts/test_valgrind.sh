@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# valgrind による philo/philosophers のメモリリーク検査。
+# valgrind による philo/philo のメモリリーク検査。
 #   - 複数シナリオを must_eat 付き（自然終了）で走らせ、valgrind がリーク検出したら fail
 #   - macOS arm64 では valgrind 非対応のためスキップ
 #   - CI（Linux）で実行することを想定
@@ -9,7 +9,7 @@
 set -eu
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-BIN="$ROOT/philo/philosophers"
+BIN="$ROOT/philo/philo"
 
 if ! command -v valgrind >/dev/null 2>&1; then
   echo "✘ valgrind が見つかりません。Linux で実行してください。"

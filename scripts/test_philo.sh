@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# philo/philosophers のシナリオテスト。
+# philo/philo のシナリオテスト。
 #
 # 実装が直列 event-loop 版である現状に合わせ、最低限の挙動を検証する:
 #   - 死ぬべきケースで "died" が出る
@@ -12,7 +12,7 @@
 set -eu
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-BIN="$ROOT/philo/philosophers"
+BIN="$ROOT/philo/philo"
 
 PASS=0
 FAIL=0
