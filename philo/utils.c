@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:03:30 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 05:17:16 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/11 20:01:59 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,4 +56,21 @@ void	log_event(t_sim *sim, int id, const char *msg)
 	}
 	pthread_mutex_unlock(&sim->death_mutex);
 	pthread_mutex_unlock(&sim->print_mutex);
+}
+
+void	free_sim(t_sim *sim)
+{
+	int	i;
+
+	i = 0;
+	while (i < sim->n)
+	{
+		pthread_mutex_destroy(&sim->forks[i]);
+		pthread_mutex_destroy(&sim->philos[i].meal_mutex);
+		i++;
+	}
+	pthread_mutex_destroy(&sim->print_mutex);
+	pthread_mutex_destroy(&sim->death_mutex);
+	free(sim->forks);
+	free(sim->philos);
 }

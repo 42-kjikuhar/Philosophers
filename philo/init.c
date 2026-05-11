@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:03:30 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 05:17:16 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/11 20:01:59 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,21 +81,4 @@ int	init_sim(t_sim *sim, int argc, char **argv)
 		return (1);
 	init_philos(sim);
 	return (0);
-}
-
-void	free_sim(t_sim *sim)
-{
-	int	i;
-
-	i = 0;
-	while (i < sim->n)
-	{
-		pthread_mutex_destroy(&sim->forks[i]);
-		pthread_mutex_destroy(&sim->philos[i].meal_mutex);
-		i++;
-	}
-	pthread_mutex_destroy(&sim->print_mutex);
-	pthread_mutex_destroy(&sim->death_mutex);
-	free(sim->forks);
-	free(sim->philos);
 }
