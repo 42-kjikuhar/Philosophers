@@ -6,7 +6,7 @@
 /*   By: kjikuhar <kjikuhar@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 04:52:32 by kjikuhar          #+#    #+#             */
-/*   Updated: 2026/05/09 05:24:54 by kjikuhar         ###   ########.fr       */
+/*   Updated: 2026/05/11 19:51:57 by kjikuhar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static int	check_one_death(t_sim *sim)
 		last = sim->philos[i].last_meal_time;
 		now = current_time_ms() - sim->start_time;
 		pthread_mutex_unlock(&sim->philos[i].meal_mutex);
-		if (now - last > sim->time_to_die)
+		if (now - last >= sim->time_to_die)
 		{
 			declare_death(sim, sim->philos[i].id, now);
 			return (1);
