@@ -146,6 +146,40 @@ run_case "no adjacent simultaneous eating (5 800 200 200 5)" \
 run_case "argc mismatch returns usage" \
   "3 100 100" "grep -q '^usage:'"
 
+# 引数検証 (is_valid_int) ----------------------------------------------------
+
+# 非数字混入 → usage
+run_case "arg with non-digit returns usage" \
+  "5abc 800 200 200" "grep -q '^usage:'"
+
+# 空文字 → usage
+run_case "empty arg returns usage" \
+  "'' 800 200 200" "grep -q '^usage:'"
+
+# 負数 → usage
+run_case "negative arg returns usage" \
+  "-5 800 200 200" "grep -q '^usage:'"
+
+# INT 範囲超過 → usage
+run_case "overflow arg returns usage" \
+  "99999999999 800 200 200" "grep -q '^usage:'"
+
+# INT_MAX + 1 → usage
+run_case "INT_MAX+1 arg returns usage" \
+  "2147483648 60 60 60 1" "grep -q '^usage:'"
+
+# 先頭空白 → usage（is_valid_int は空白を弾く）
+run_case "leading whitespace returns usage" \
+  "' 5' 800 200 200" "grep -q '^usage:'"
+
+# n=0 → usage（parse_args の正数チェック）
+run_case "zero n returns usage" \
+  "0 800 200 200" "grep -q '^usage:'"
+
+# 先頭 + は許容 → 通常実行（must_eat=2 で短時間に自然終了、死亡なし）
+run_case "leading plus accepted, no death" \
+  "+5 800 200 200 2" expect_no_death
+
 echo
 echo "──────────────────────"
 echo "  passed: $PASS"
